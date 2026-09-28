@@ -1,0 +1,33 @@
+name: Migrate thesis PDF
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download thesis from source repository
+        run: |
+          mkdir -p docs
+          curl -L --fail --retry 3             -o "docs/Proposal of a new explainability method.pdf"             "https://raw.githubusercontent.com/EMH01/em_projects/main/xai-perturbation-research/docs/Proposal%20of%20a%20new%20explainability%20method.pdf"
+
+      - name: Verify exact Git blob
+        run: |
+          test "$(git hash-object "docs/Proposal of a new explainability method.pdf")" = "aa8c8b84a2f78e1fe55b1c0306ab6b078b78f085"
+
+      - name: Commit migrated PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "docs/Proposal of a new explainability method.pdf"
+          git diff --cached --quiet && exit 0
+          git commit -m "docs: migrate original thesis PDF"
+          git push
