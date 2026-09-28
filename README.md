@@ -176,7 +176,7 @@ Tests use tiny synthetic tensors and do **not** download VGG19 weights or Food-1
 
 The thesis reported experimental consistency in generated relevance maps and identified changes required for improving explanation quality. The modernization does not fabricate or reinterpret those results.
 
-Before this project becomes a standalone portfolio repository, the next research pass should add:
+The next research pass should add:
 
 - machine-readable experiment configurations
 - reconstruction of the exact class subsets used in the thesis
