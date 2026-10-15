@@ -2,18 +2,15 @@ import argparse
 from pathlib import Path
 
 from xai_perturbation.checkpoints import save_state_dict
-from xai_perturbation.data import (
-    imagefolder_splits,
-    legacy_transform,
-    make_loader,
-    vgg_transform,
-)
+from xai_perturbation.data import imagefolder_splits, make_loader, thesis_transform
 from xai_perturbation.models import build_vgg19_classifier
 from xai_perturbation.training import choose_device, train_classifier
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train the VGG19-BN classifier.")
+    parser = argparse.ArgumentParser(
+        description="Run the VGG19-BN classifier stage used in the 2023 thesis workflow."
+    )
     parser.add_argument("data", type=Path, help="ImageFolder dataset root")
     parser.add_argument("--output", type=Path, default=Path("checkpoints/classifier.pt"))
     parser.add_argument("--epochs", type=int, default=5)
@@ -21,21 +18,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--momentum", type=float, default=0.9)
     parser.add_argument(
-        "--preprocessing",
-        choices=("legacy", "vgg"),
-        default="legacy",
-        help="Use the original thesis preprocessing or ImageNet VGG preprocessing.",
+        "--seed",
+        type=int,
+        default=None,
+        help=(
+            "Optional split seed. Omit it to retain the notebook's unseeded random_split "
+            "behavior."
+        ),
     )
-    parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    transform = legacy_transform() if args.preprocessing == "legacy" else vgg_transform()
     train_set, _, _ = imagefolder_splits(
         args.data,
-        transform=transform,
+        transform=thesis_transform(),
         seed=args.seed,
     )
     classes = train_set.dataset.classes
@@ -60,8 +58,9 @@ def main() -> None:
         args.output,
         metadata={
             "classes": classes,
-            "preprocessing": args.preprocessing,
+            "preprocessing": "thesis",
             "epochs": args.epochs,
+            "split_seed": args.seed,
         },
     )
     final = history[-1]
