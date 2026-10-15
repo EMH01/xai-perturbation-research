@@ -18,10 +18,15 @@ def explain_batch(
     model: PerturbationClassifier,
     images: torch.Tensor,
 ) -> ExplanationBatch:
+    """Collect the same visual-analysis elements produced by the thesis notebook."""
     model.eval()
     mask = model.explainer.mask(images)
     perturbed = images * mask
-    predictions = model.classifier(perturbed).argmax(dim=1)
+
+    # The notebook's save() function recorded the classifier prediction for the
+    # original image alongside the relevance map and perturbed image.
+    predictions = model.classifier(images).argmax(dim=1)
+
     return ExplanationBatch(
         original=images,
         mask=mask,
