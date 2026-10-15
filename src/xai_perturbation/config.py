@@ -9,4 +9,4 @@ class ExperimentConfig:
     batch_size: int = 32
     learning_rate: float = 1e-3
     momentum: float = 0.9
-    seed: int = 42
+    seed: int | None = None
