@@ -4,11 +4,10 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset, random_split
 from torchvision import datasets, transforms
-from torchvision.models import VGG19_BN_Weights
 
 
-def legacy_transform(image_size: int = 224) -> transforms.Compose:
-    """Preprocessing used by the original research code."""
+def thesis_transform(image_size: int = 224) -> transforms.Compose:
+    """Resize, center-crop and tensor conversion used in the 2023 notebook."""
     return transforms.Compose(
         [
             transforms.Resize(256),
@@ -18,17 +17,12 @@ def legacy_transform(image_size: int = 224) -> transforms.Compose:
     )
 
 
-def vgg_transform() -> transforms.Compose:
-    """Current preprocessing associated with the pretrained VGG19-BN weights."""
-    return VGG19_BN_Weights.DEFAULT.transforms()
-
-
 def imagefolder_splits(
     root: str | Path,
     *,
     transform,
     split: Sequence[float] = (0.6, 0.2, 0.2),
-    seed: int = 42,
+    seed: int | None = None,
 ) -> tuple[Dataset, Dataset, Dataset]:
     if len(split) != 3 or not torch.isclose(torch.tensor(sum(split)), torch.tensor(1.0)):
         raise ValueError("split must contain three fractions summing to 1.0")
@@ -38,7 +32,11 @@ def imagefolder_splits(
     train_size = int(split[0] * total)
     eval_size = int(split[1] * total)
     test_size = total - train_size - eval_size
-    generator = torch.Generator().manual_seed(seed)
+
+    generator = None
+    if seed is not None:
+        generator = torch.Generator().manual_seed(seed)
+
     return tuple(
         random_split(
             dataset,
@@ -53,7 +51,7 @@ def make_loader(
     *,
     batch_size: int,
     shuffle: bool,
-    num_workers: int = 0,
+    num_workers: int = 2,
 ) -> DataLoader:
     return DataLoader(
         dataset,
@@ -71,12 +69,11 @@ def correctly_classified_subset(
     batch_size: int,
     device: torch.device,
 ) -> Subset:
-    """Return a non-destructive subset containing only correctly classified examples."""
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    """Return the examples the classifier predicts correctly, as in the thesis workflow."""
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=2)
     keep: list[int] = []
     offset = 0
 
-    model.eval()
     for images, labels in loader:
         images = images.to(device)
         labels = labels.to(device)
