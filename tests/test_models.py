@@ -17,7 +17,7 @@ def test_dense_explainer_produces_bounded_mask_and_same_shape():
     assert torch.all(mask <= 1)
 
 
-def test_classifier_remains_frozen_and_in_eval_mode():
+def test_classifier_weights_are_frozen_without_forcing_eval_mode():
     explainer = DensePixelMaskExplainer(image_size=4, channels=3, hidden_dim=8)
     classifier = nn.Sequential(nn.Flatten(), nn.Linear(3 * 4 * 4, 2))
     model = PerturbationClassifier(explainer, classifier)
@@ -25,6 +25,6 @@ def test_classifier_remains_frozen_and_in_eval_mode():
     model.train()
 
     assert model.training
-    assert not model.classifier.training
+    assert model.classifier.training
     assert all(not parameter.requires_grad for parameter in model.classifier.parameters())
     assert all(parameter.requires_grad for parameter in model.explainer.parameters())
