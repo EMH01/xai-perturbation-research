@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "xai-perturbation-research"
 version = "0.1.0"
-description = "Reproducible research code for learned perturbation-based image explanations."
+description = "Modularized code and preserved artifacts from a 2023 Computer Science Diploma Thesis."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
