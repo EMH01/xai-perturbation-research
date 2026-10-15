@@ -88,7 +88,7 @@ def train_explainer(
     device: torch.device,
 ) -> list[EpochMetrics]:
     model.to(device)
-    model.freeze_classifier()
+    model.freeze_classifier_weights()
     optimizer = torch.optim.SGD(
         model.explainer.parameters(),
         lr=learning_rate,
