@@ -1,10 +1,51 @@
 # Learned Perturbation for Explainable Image Classification
 
-A reproducible modernization of my Computer Science research on **Explainable Artificial Intelligence (XAI)** for image classifiers.
+A reproducible modernization of my **Computer Science Diploma Thesis (December 2023)** on **Explainable Artificial Intelligence (XAI)** for image classifiers.
 
 The original work investigated whether a learnable network placed before a trained image classifier could produce a **pixel-level relevance mask** while preserving the classifier's ability to predict the correct class. The experiments used VGG19-based image classification and Food-101-derived subsets.
 
 > This repository modernization preserves the research method. It improves reproducibility, code structure, checkpointing, and experimental controls without presenting new results as if they belonged to the original study.
+
+
+## Historical context and research continuity
+
+This project originated as my **Computer Science Diploma Thesis**, completed in **December 2023**, under the title *Proposal of a new explainability method to interpret the results of trained models for image classification*.
+
+The original thesis must be read in its **2023 methodological and technological context**. The field of explainable AI has continued to evolve since then, including the development and refinement of perturbation-based methods, attribution techniques, quantitative faithfulness metrics, robustness criteria, and broader evaluation frameworks.
+
+The present repository has two distinct purposes:
+
+1. **Preserve the original research artifact and method.** The thesis, experimental design, original conclusions, and historical implementation remain identifiable as the 2023 work.
+2. **Modernize the implementation for reproducibility.** The current codebase improves project structure, experiment controls, checkpointing, dataset handling, and testing. These engineering changes are not presented as new scientific validation of the original method.
+
+### What the 2023 thesis concluded
+
+The thesis introduced **VXN (Vision's eXplainer Network)**, a local, model-dependent explanation approach in which a learned neural network generates pixel-level relevance information for a trained image classifier.
+
+The original experiments reported:
+
+- a first experimental demonstration that the explainer could learn non-null relevance maps;
+- greater visual detail in the reduced two-class case study than in the broader class configurations;
+- evidence that reducing the number of classes and changing architectural/training parameters could improve the resulting explanations;
+- sensitivity to the dataset and substantial computational cost;
+- the need for further experimentation before making stronger claims about explanation quality.
+
+These findings should therefore be interpreted as **experimental-stage results**, not as evidence that VXN is superior to established or current XAI methods.
+
+### A meaningful continuation today
+
+A contemporary continuation should not simply reproduce the 2023 experiments. It should **re-evaluate the central hypothesis under current XAI methodology**. A rigorous next research phase would include:
+
+- comparison with established and contemporary XAI baselines;
+- quantitative faithfulness and explanation-quality metrics in addition to visual inspection;
+- robustness and sensitivity analysis;
+- evaluation across multiple image models and datasets;
+- explicit treatment of selection effects introduced by evaluating only correctly classified samples;
+- systematic hyperparameter and perturbation-function studies;
+- multiple random seeds and uncertainty reporting;
+- computational-cost and scalability analysis.
+
+This distinction is intentional: the repository preserves a genuine undergraduate research contribution while making clear which claims belong to the **original 2023 thesis** and which questions remain open for a future research continuation.
 
 ## Research idea
 
@@ -174,18 +215,21 @@ Tests use tiny synthetic tensors and do **not** download VGG19 weights or Food-1
 
 ## Research status
 
-The thesis reported experimental consistency in generated relevance maps and identified changes required for improving explanation quality. The modernization does not fabricate or reinterpret those results.
+The **2023 thesis** reported experimental-stage consistency in the generated relevance maps and identified concrete directions for improving explanation quality. Its final conclusions describe VXN as a local, model-dependent neural explanation approach, sensitive to the data and computationally expensive, with the strongest qualitative results appearing in the reduced two-class experiment.
 
-The next research pass should add:
+The thesis itself recommended additional hyperparameter search, evaluation of alternative perturbation functions, image-transformation experiments, and application of the method to other image-classification models.
 
-- machine-readable experiment configurations
-- reconstruction of the exact class subsets used in the thesis
-- saved original metrics where they can be verified from source material
-- quantitative explanation metrics (for example deletion/insertion-style evaluation)
-- comparison against established XAI baselines
-- representative relevance-map figures
-- multiple random seeds and uncertainty reporting
-- hardware/runtime documentation
+The modernization does **not** fabricate, upgrade, or reinterpret those historical results as contemporary evidence. The next research pass should add:
+
+- machine-readable experiment configurations;
+- reconstruction of the exact class subsets used in the thesis;
+- saved original metrics where they can be verified from source material;
+- quantitative explanation metrics (for example deletion/insertion-style evaluation);
+- comparison against established and current XAI baselines;
+- representative relevance-map figures;
+- multiple random seeds and uncertainty reporting;
+- robustness and sensitivity evaluation;
+- hardware/runtime and computational-cost documentation.
 
 ## Original research artifact
 
