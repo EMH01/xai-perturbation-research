@@ -4,7 +4,7 @@ from torchvision.models import VGG19_BN_Weights, vgg19_bn
 
 
 class DensePixelMaskExplainer(nn.Module):
-    """Faithful modernization of the dense explainer used in the original research."""
+    """Modular form of the dense explainer implemented in the 2023 thesis notebook."""
 
     def __init__(
         self,
@@ -35,22 +35,20 @@ class DensePixelMaskExplainer(nn.Module):
 
 
 class PerturbationClassifier(nn.Module):
-    """Apply a learned perturbation before a frozen image classifier."""
+    """Apply the learned perturbation before the thesis classifier."""
 
     def __init__(self, explainer: nn.Module, classifier: nn.Module) -> None:
         super().__init__()
         self.explainer = explainer
         self.classifier = classifier
-        self.freeze_classifier()
+        self.freeze_classifier_weights()
 
-    def freeze_classifier(self) -> None:
+    def freeze_classifier_weights(self) -> None:
+        # The thesis notebook optimized only the explainer parameters.
+        # requires_grad=False preserves that behavior while avoiding unused
+        # classifier gradients; train/eval mode is still controlled by the
+        # parent module, as in the original CombinedNetwork.
         self.classifier.requires_grad_(False)
-        self.classifier.eval()
-
-    def train(self, mode: bool = True):
-        super().train(mode)
-        self.classifier.eval()
-        return self
 
     def forward(self, images: torch.Tensor) -> torch.Tensor:
         perturbed = self.explainer(images)
@@ -62,6 +60,8 @@ def build_vgg19_classifier(
     *,
     pretrained: bool = True,
 ) -> nn.Module:
+    # Equivalent current TorchVision API for the notebook's
+    # models.vgg19_bn(pretrained=True).
     weights = VGG19_BN_Weights.DEFAULT if pretrained else None
     model = vgg19_bn(weights=weights)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
