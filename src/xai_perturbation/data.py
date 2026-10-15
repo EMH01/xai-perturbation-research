@@ -74,6 +74,7 @@ def correctly_classified_subset(
     keep: list[int] = []
     offset = 0
 
+    model.eval()
     for images, labels in loader:
         images = images.to(device)
         labels = labels.to(device)
